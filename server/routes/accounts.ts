@@ -14,10 +14,10 @@ const accounts = express.Router();
 accounts.post<
     {},
     { id?: string; token?: string; success: boolean; message: string },
-    User
+    { username: string; email: string; password: string; telegram_id?: string }
 >("/signup", async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, telegram_id} = req.body;
 
         if (!username || !email || !password) {
             res.status(400).json({
@@ -38,14 +38,14 @@ accounts.post<
             });
             return;
         }
-        if (!passwordRegex.test(password)) {
-            res.status(400).json({
-                success: false,
-                message:
-                    "Password is not valid. Password must contain at least one letter (uppercase or lowercase) and one digit, and must be at least 8 characters in length.",
-            });
-            return;
-        }
+        // if (!passwordRegex.test(password)) {
+        //     res.status(400).json({
+        //         success: false,
+        //         message:
+        //             "Password is not valid. Password must contain at least one letter (uppercase or lowercase) and one digit, and must be at least 8 characters in length.",
+        //     });
+        //     return;
+        // }
         if (!usernameRegex.test(username)) {
             res.status(400).json({
                 success: false,
@@ -85,6 +85,7 @@ accounts.post<
             username: username,
             email: email,
             password: hashedPas,
+            telegram_id: telegram_id || "",
         };
 
         const userModel = new UserModel(user);
@@ -94,6 +95,7 @@ accounts.post<
             username: username,
             email: email,
             password: hashedPas,
+            telegram_id: telegram_id || "",
         });
 
         const id = userFromDb ? userFromDb.id.toString() : "none";
@@ -118,9 +120,9 @@ accounts.post<
 accounts.post<
     {},
     { id?: string; token?: string; success: boolean; message: string },
-    { username_or_email: string; password: string }
+    { username_or_email: string; password: string; telegram_id?: string }
 >("/login", async (req, res) => {
-    const { username_or_email, password } = req.body;
+    const { username_or_email, password,telegram_id } = req.body;
 
     if (!username_or_email || !password) {
         res.status(400).json({
@@ -130,6 +132,8 @@ accounts.post<
         return;
     }
 
+   
+
     try {
         const user = await UserModel.findOne({
             $or: [
@@ -137,7 +141,15 @@ accounts.post<
                 { email: username_or_email },
             ],
         });
+        console.log("telegram_id",telegram_id);
+        console.log("user",user);
+        
+        if (user) {
+            user.telegram_id = telegram_id ||  "";
+        }
 
+        console.log("after user",user);
+        await  user?.updateOne(user);
         if (user == null) {
             res.status(400).json({
                 success: false,

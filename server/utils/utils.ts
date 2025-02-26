@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import UserModel from "../models/user";
 import { Document } from "mongoose";
 import { DProblem } from "../models/problem";
+import { Sort } from "../types/problem";
 
 export async function existsUsername(username: string) {
     const user = await UserModel.findOne({ username: username });
@@ -11,7 +12,7 @@ export async function existsUsername(username: string) {
 export async function existsEmail(email: string) {
     const user = await UserModel.findOne({ email: email });
     return !(user == null);
-}
+}  
 
 export function sortByDifficulty(
     order: Sort,

@@ -49,7 +49,7 @@ interface TestCase {
     expected_output: string;
 }
 
-interface Submission {
+export interface Submission {
     problem_name: string;
     status:
         | "Accepted"
@@ -67,4 +67,4 @@ interface Submission {
     user_output?: string;
 }
 
-type Sort = "asc" | "des" | "";
+export type Sort = "asc" | "des" | "";

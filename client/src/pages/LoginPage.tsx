@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { API_URL } from "../App";
 import Loading from "../components/Loading";
 
@@ -14,12 +14,14 @@ const LoginPage = ({
         setIdFunction: (string: string) => void;
     };
 }) => {
+    const [searchParams] = useSearchParams();
+    const telegram_id = searchParams.get("telegram_id");
     const [usernameOrEmail, setUsernameOrEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
     const [isLoading, setisLoading] = useState<boolean>(false);
     const navigate = useNavigate();
-
+         console.log("telegram_id",telegram_id);
     const handleLogin = () => {
         setisLoading(true);
         try {
@@ -27,6 +29,7 @@ const LoginPage = ({
                 .post(`${API_URL}/api/accounts/login`, {
                     username_or_email: usernameOrEmail,
                     password: password,
+                    telegram_id: telegram_id || "",
                 })
                 .then(({ data }) => {
                     if (data.success === false) {
@@ -60,9 +63,9 @@ const LoginPage = ({
                     className="inline-block relative text-[24px] left-1/2 -translate-x-1/2 font-bold italic mx-auto mt-[12px]"
                 >
                     <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 px-[1px]">
-                        Fire
+                       Creator
                     </span>
-                    <span>Code</span>
+                    <span>Platform</span>
                 </div>
             </Link>
             <div className="min-h-fit w-[300px] mx-auto text-[14px]">

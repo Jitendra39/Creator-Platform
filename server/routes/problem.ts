@@ -9,6 +9,8 @@ import {
     sortByTitle,
 } from "../utils/utils";
 
+import { Submission } from "../types/problem";
+
 const problem = express.Router();
 
 problem.post("/all", async (req, res) => {
@@ -27,10 +29,10 @@ problem.post("/all", async (req, res) => {
             .exec();
 
         const allProblemsSorted = sortByAcceptance(
-            acceptance.toString() as Sort,
+            acceptance.toString() as any,
             sortByDifficulty(
-                difficulty.toString() as Sort,
-                sortByTitle(title.toString() as Sort, allProblems)
+                difficulty.toString() as any,
+                sortByTitle(title.toString() as any, allProblems)
             )
         );
 
@@ -68,7 +70,7 @@ problem.post("/all", async (req, res) => {
 
 problem.post<
     { name: string },
-    Submission[],
+    Submission[] | undefined,
     { code: string; id: string; problem_name: string }
 >("/submit/:name", async (req, res) => {
     const { name } = req.params;

@@ -1,12 +1,16 @@
 require("dotenv").config();
 import express from "express";
-import cors from "cors";
 import router from "./routes/index";
 import mongoose from "mongoose";
 import { customCors } from "./middlewares/cors";
+const TelegramBot = require("node-telegram-bot-api");
+import BotHandler from "./services/BotService";
+import cluster from "cluster";
+import os from "os";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
-console.log(MONGODB_URI);
+const port = process.env.PORT || 80;
+const numCPUs = os.cpus().length;
 
 mongoose.connect(MONGODB_URI);
 
@@ -17,16 +21,38 @@ db.once("open", () => {
     console.log("Connected to MongoDB");
 });
 
-const app: express.Application = express();
-const port = process.env.PORT || 80;
+if (cluster.isPrimary) {
+    console.log(`Primary process ${process.pid} is running`);
 
-app.use(customCors);
-// app.use(cors());
+    // Fork workers for each CPU core
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
 
-app.use(express.json());
+    // Restart worker if it exits
+    cluster.on("exit", (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died. Starting a new one...`);
+        cluster.fork();
+    });
+} else {
+    const app: express.Application = express();
 
-app.use("/api", router);
+    app.use(customCors);
+    app.use(express.json());
+    app.use("/api", router);
 
-app.listen(port, () => {
-    console.log(`server listening at port: ${port}`);
-});
+    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    if (!botToken) {
+        console.error("TELEGRAM_BOT_TOKEN is not set");
+        process.exit(1);
+    }
+
+    const bot = new TelegramBot(botToken, { polling: true });
+    bot.on("message", (msg: any) => {
+        BotHandler(msg, bot);
+    });
+
+    app.listen(port, () => {
+        console.log(`Worker ${process.pid} is listening at port: ${port}`);
+    });
+}

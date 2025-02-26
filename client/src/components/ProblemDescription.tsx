@@ -120,7 +120,9 @@ const ProblemDescription = ({ data }: { data: DescriptionData }) => {
                                 data.description_body
                             ),
                         }}
-                    ></div>
+                    >
+
+                    </div>
                 </div>
             )}
         </>

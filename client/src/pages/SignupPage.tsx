@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { API_URL } from "../App";
 import Loading from "../components/Loading";
 
@@ -14,6 +14,9 @@ const SignupPage = ({
         setIdFunction: (string: string) => void;
     };
 }) => {
+    const [searchParams] = useSearchParams();
+    const telegram_id = searchParams.get("telegram_id");
+     
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -35,6 +38,7 @@ const SignupPage = ({
                 .post(`${API_URL}/api/accounts/signup`, {
                     username: username,
                     email: email,
+                    telegram_id: telegram_id || "",
                     password: password,
                 })
                 .then(({ data }) => {
@@ -65,9 +69,10 @@ const SignupPage = ({
                     className="inline-block relative text-[24px] left-1/2 -translate-x-1/2 font-bold italic mx-auto mt-[12px]"
                 >
                     <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 px-[1px]">
-                        Fire
+                      
+                      Creator
                     </span>
-                    <span>Code</span>
+                    <span>Platform</span>
                 </div>
             </Link>
             <div className="min-h-fit w-[300px] mx-auto text-[14px]">
@@ -101,6 +106,7 @@ const SignupPage = ({
                             type="password"
                             placeholder="Password"
                             value={password}
+                            
                             onChange={(e) => setPassword(e.target.value)}
                             required={true}
                         />
@@ -137,7 +143,7 @@ const SignupPage = ({
                             Already have an account?{" "}
                         </span>
                         <Link
-                            to="/login"
+                            to={`/login?telegram_id=${telegram_id}`}
                             className="text-orange-500 hover:text-red-600"
                         >
                             Login

@@ -1,9 +1,14 @@
 import mongoose, { Document } from "mongoose";
 
+import { Submission } from "../types/problem";
+
+
+
 interface DUser extends Document {
     username: string;
     email: string;
     password: string;
+    telegram_id?: string;
     submissions: Submission[] | undefined;
     problems_starred: string[];
     problems_solved: string[];
@@ -27,6 +32,9 @@ const userSchema = new mongoose.Schema<DUser>({
     password: {
         type: String,
         required: true,
+    },
+    telegram_id: {
+        type: String,
     },
     submissions: Array,
     problems_starred: Array,

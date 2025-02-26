@@ -91,7 +91,7 @@ const ProfilePage = ({
                             className="flex flex-col sm:flex-row h-fit"
                         >
                             <div id="porfile-pic">
-                                <div className="w-[80px] h-[80px] mt-[40px] border border-borders sm:ml-[50px] mx-auto rounded-lg"></div>
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmh903RuvBCgjlWDeCFJehx7Xu6FJNu4ADCw&s" alt="Profile" className="w-[80px] h-[80px] mt-[40px] border border-borders sm:ml-[50px] mx-auto rounded-lg"/>
                             </div>
                             <div className="flex flex-col w-[280px] text-center sm:text-left mx-auto sm:ml-0">
                                 <div
@@ -104,7 +104,7 @@ const ProfilePage = ({
                                     id="username"
                                     className="text-[18px] mt-[6px] text-text_2 sm:ml-[30px] ml-0"
                                 >
-                                    Rank: {user.rank}
+                                    Rank: {user.rank || "1"}
                                 </div>
                             </div>
                             <div className="md:flex hidden flex-row absolute right-[90px]">
