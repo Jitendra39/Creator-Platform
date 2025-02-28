@@ -20,39 +20,42 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 db.once("open", () => {
     console.log("Connected to MongoDB");
 });
-
 if (cluster.isPrimary) {
     console.log(`Primary process ${process.pid} is running`);
 
-    // Fork workers for each CPU core
     for (let i = 0; i < numCPUs; i++) {
-        cluster.fork();
+        cluster.fork({ RUN_BOT: i === 0 ? "true" : "false" }); // Pass env vars directly to fork
     }
 
-    // Restart worker if it exits
-    cluster.on("exit", (worker, code, signal) => {
-        console.log(`Worker ${worker.process.pid} died. Starting a new one...`);
-        cluster.fork();
+    cluster.on("exit", (worker) => {
+        console.log(`Worker ${worker.process?.pid} died. Restarting...`);
+        cluster.fork(); // Restart with default env
     });
 } else {
     const app: express.Application = express();
-
+   
     app.use(customCors);
     app.use(express.json());
     app.use("/api", router);
+   app.get("/", (req, res) => {
+        res.send("Hello World");
+    });
+    if (process.env.RUN_BOT === "true") {
+        const botToken = process.env.TELEGRAM_BOT_TOKEN;
+        if (!botToken) {
+            console.error("TELEGRAM_BOT_TOKEN is not set");
+            process.exit(1);
+        }
 
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    if (!botToken) {
-        console.error("TELEGRAM_BOT_TOKEN is not set");
-        process.exit(1);
+        const bot = new TelegramBot(botToken, { polling: true });
+        bot.on("message", (msg: any) => {
+            BotHandler(msg, bot);
+        });
+
+        console.log(`Bot is running on worker ${process.pid}`);
     }
 
-    const bot = new TelegramBot(botToken, { polling: true });
-    bot.on("message", (msg: any) => {
-        BotHandler(msg, bot);
-    });
-
     app.listen(port, () => {
-        console.log(`Worker ${process.pid} is listening at port: ${port}`);
+        console.log(`Worker ${process.pid} listening on port ${port}`);
     });
 }
