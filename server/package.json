@@ -4,8 +4,8 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "dev": "nodemon --exec ts-node ./server.ts",
-        "start": "npm run build && nodemon ./dist/server.js",
+        "dev": "node --exec ts-node ./server.ts",
+        "start": "npm run build && node ./dist/server.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc"
     },
