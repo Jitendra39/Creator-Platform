@@ -1,1 +1,1 @@
-export const API_URL: string = "http://localhost:80";
+export const API_URL: string = "https://creator-platform-ckto.onrender.com";
