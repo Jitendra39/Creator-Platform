@@ -8,7 +8,7 @@ export function customCors(
 ) {
     // Allow requests from any origin
     const origin = req.headers.origin;
-    
+
     // Set Access-Control-Allow-Origin to * or to the requesting origin
     if (origin) {
         res.setHeader("Access-Control-Allow-Origin", origin);
