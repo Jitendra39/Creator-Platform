@@ -1,0 +1,71 @@
+import mongoose, { Document } from "mongoose";
+
+import { Submission } from "../types/problem";
+
+interface DUser extends Document {
+    username: string;
+    email: string;
+    password: string;
+    telegram_id?: string;
+    refreshToken?: string;
+    submissions: Submission[] | undefined;
+    problems_starred: string[];
+    problems_solved: string[];
+    problems_attempted: string[];
+    problems_solved_count: number;
+    rank: number;
+    views: number;
+    solution_count: number;
+    reputation_count: number;
+}
+
+const userSchema = new mongoose.Schema<DUser>({
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    telegram_id: {
+        type: String,
+    },
+    refreshToken: {
+        type: String,
+    },
+    submissions: [{ type: Object }],
+    problems_starred: [{ type: String }],
+    problems_solved: [{ type: String }],
+    problems_attempted: [{ type: String }],
+    problems_solved_count: {
+        type: Number,
+        default: 0,
+    },
+    rank: {
+        type: Number,
+        default: 0,
+    },
+    views: {
+        type: Number,
+        default: 0,
+    },
+    solution_count: {
+        type: Number,
+        default: 0,
+    },
+    reputation_count: {
+        type: Number,
+        default: 0,
+    },
+});
+
+const UserModel = mongoose.model<DUser>("User", userSchema);
+
+export default UserModel;
